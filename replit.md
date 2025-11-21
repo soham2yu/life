@@ -201,3 +201,4 @@ All scores normalized to 0-100 scale.
   - Minimal Next.js 15 frontend for testing
   - GitLab CI/CD pipeline configuration
   - Docker support for backend
+  - **CRITICAL FIX**: Database layer (backend/app/core/database.py) now converts asyncpg.Record to dicts in fetch_one/fetch_all methods, preventing AttributeError across all repositories and services
