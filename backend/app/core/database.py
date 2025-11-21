@@ -52,14 +52,16 @@ class Database:
             return await conn.execute(query, *args)
     
     async def fetch_one(self, query: str, *args):
-        """Fetch a single row"""
+        """Fetch a single row as dict"""
         async with self.get_connection() as conn:
-            return await conn.fetchrow(query, *args)
+            row = await conn.fetchrow(query, *args)
+            return dict(row) if row else None
     
     async def fetch_all(self, query: str, *args):
-        """Fetch all rows"""
+        """Fetch all rows as list of dicts"""
         async with self.get_connection() as conn:
-            return await conn.fetch(query, *args)
+            rows = await conn.fetch(query, *args)
+            return [dict(row) for row in rows]
     
     async def fetch_val(self, query: str, *args):
         """Fetch a single value"""

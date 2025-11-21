@@ -71,8 +71,8 @@ async def get_current_user(
         user_record = await db.fetch_one(insert_query, firebase_uid, email)
         logger.info(f"Created new user: {email}")
     
-    # Check if user is active
-    if not user_record.get('is_active') or user_record.get('is_banned'):
+    # Check if user is active (Database layer returns dicts now)
+    if not user_record.get('is_active', True) or user_record.get('is_banned', False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is inactive or banned"
