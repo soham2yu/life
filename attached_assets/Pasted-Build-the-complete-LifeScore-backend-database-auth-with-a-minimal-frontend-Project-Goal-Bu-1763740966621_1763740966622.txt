@@ -1,0 +1,360 @@
+Build the complete LifeScore backend + database + auth, with a minimal frontend”
+📌 Project Goal
+
+Build a production-grade full stack LifeScore system, but the primary focus is:
+
+Backend API logic (main priority)
+
+Database design (Supabase PostgreSQL)
+
+Authentication (Firebase Auth + server validation)
+
+Clean, modular API architecture
+
+GitLab-compatible project structure
+
+Minimal frontend only for testing (Next.js 15) — I will refine it later using Blackbox
+
+The backend must include every LifeScore feature:
+
+User onboarding
+
+Auth verification (Firebase ID tokens)
+
+Cognitive scoring engine
+
+Portfolio scoring engine
+
+Composite LifeScore calculation
+
+Certificate generation endpoints (SBT-ready)
+
+Endorsements system
+
+GitHub analysis endpoints
+
+Activity logs
+
+Admin tools
+
+Rate limiting
+
+🎯 1. Tech Stack Requirements
+Backend (Main focus)
+
+FastAPI
+
+Python 3.11
+
+Supabase Postgres (async) using asyncpg
+
+Firebase Admin SDK
+
+JWT verification middleware
+
+Pydantic v2
+
+Redis (optional caching)
+
+Background tasks using FastAPI + Celery (optional)
+
+Structured logging (loguru)
+
+API versioning (v1, v2)
+
+Replit must generate:
+
+Full modular router system
+
+Business logic modules
+
+Service layer
+
+Repository layer
+
+Database migration scripts
+
+SQL files for Supabase
+
+Database (Second priority)
+
+Supabase PostgreSQL with tables:
+
+users
+cognitive_tests
+cognitive_scores
+portfolio_scores
+profiles
+endorsements
+certificates
+activity_logs
+github_repos
+github_metrics
+lifescore_history
+auth_providers
+sessions
+
+
+Replit must generate:
+
+supabase.sql (full schema + constraints + indexes)
+
+Migrations folder
+
+Connection pooling logic
+
+Database client wrapper
+
+Authentication (Third priority)
+
+Firebase Auth (client SDK + server Admin SDK)
+
+Backend must include:
+
+Token verification middleware
+
+Role handling
+
+Refresh token flow
+
+Guarded routes
+
+Supabase user creation on first login
+
+🎯 2. Backend Features to Build (Mandatory)
+AUTH
+
+/auth/verify — verify Firebase ID tokens
+
+/auth/register-user — create supabase user record
+
+/auth/me — return authenticated user
+
+COGNITIVE ENGINE
+
+Endpoints:
+
+/cognitive/start
+
+/cognitive/submit
+
+/cognitive/score
+
+Features:
+
+Time measurement
+
+Accuracy scoring
+
+Weighted difficulty scoring
+
+Store raw results + score breakdown
+
+PORTFOLIO ENGINE
+
+Endpoints:
+
+/portfolio/analyze-github
+
+/portfolio/store-score
+
+Features:
+
+Repo count
+
+Commit activity
+
+Star ratio
+
+Repo quality scoring
+
+AI-based readme quality
+
+Tech stack extraction
+
+LIFESCORE ENGINE
+
+Endpoint:
+/lifescore/calculate
+
+Weights:
+
+50% cognitive
+
+30% portfolio
+
+20% endorsements
+
+Backend must:
+
+Produce a normalized score 0-100
+
+Store scoring history
+
+Provide growth metrics
+
+CERTIFICATE ENGINE
+
+Endpoints:
+
+/certificate/create
+
+/certificate/:id
+
+/certificate/verify
+
+Features:
+
+UUID-based
+
+Public verification
+
+SBT-compatible metadata
+
+ENDORSEMENTS
+
+Add endorsement
+
+Approve/deny
+
+Score impact
+
+LOGGING
+
+API logs
+
+Performance logs
+
+Error logs
+
+Activity tracking
+
+ADMIN ENDPOINTS
+
+View all users
+
+View scores
+
+Ban/delete user
+
+🎯 3. Minimal Frontend (for Testing Only)
+
+Replit must create a very simple functional frontend using:
+
+Next.js 15
+
+TypeScript
+
+Tailwind
+
+Firebase Auth SDK
+
+Pages:
+
+/login
+
+/dashboard — show cognitive score, portfolio score, LifeScore
+
+/test/cognitive
+
+/portfolio
+
+/certificate/:id
+
+IMPORTANT:
+Frontend should be clean, basic, and only used to test backend.
+I will polish UI using Blackbox later.
+
+🎯 4. Environment Variables
+
+Generate .env.example with:
+
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_ANON_KEY=
+
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
+
+DATABASE_URL=
+REDIS_URL=
+GITHUB_TOKEN=
+
+🎯 5. Folder Structure
+
+Replit must output:
+
+/backend
+  /app
+    main.py
+    /core
+    /config
+    /models
+    /schemas
+    /services
+    /repositories
+    /routes
+    /utils
+  supabase.sql
+  requirements.txt
+  Dockerfile
+
+/frontend
+  next.config.js
+  /app
+  /components
+  /lib
+  firebase.ts
+  tailwind.config.js
+
+.gitlab-ci.yml
+.env.example
+
+🎯 6. GitLab Integration Requirements
+
+Replit must generate:
+
+.gitlab-ci.yml
+
+Stages:
+
+install
+build
+test
+deploy
+
+
+Backend pipeline:
+
+Install Python deps
+
+Run tests
+
+Run linter
+
+Build Docker image
+
+Deploy
+
+Frontend pipeline:
+
+Install Node deps
+
+Build Next.js
+
+Run type checks
+
+🎯 7. Output Requirements
+
+Replit must produce:
+
+✔ Fully working backend (priority 1)
+✔ Fully configured database schema (priority 2)
+✔ Fully implemented Firebase auth system (priority 3)
+✔ Minimal frontend for testing
+✔ API documentation (Swagger + Redoc)
+✔ SQL schema for Supabase
+✔ .env.example
+✔ GitLab pipeline
+✔ Deployment guide
