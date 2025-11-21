@@ -5,3 +5,4 @@ integrations = ["firebase_barebones_javascript:1.0.0", "github:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["libxcrypt", "postgresql"]

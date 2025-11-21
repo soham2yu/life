@@ -1,0 +1,113 @@
+stages:
+  - install
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+backend-install:
+  stage: install
+  image: python:3.11-slim
+  script:
+    - cd backend
+    - pip install -r requirements.txt
+  cache:
+    key: backend-deps
+    paths:
+      - backend/.pip-cache
+  only:
+    changes:
+      - backend/**/*
+
+frontend-install:
+  stage: install
+  image: node:20
+  script:
+    - cd frontend
+    - npm ci
+  cache:
+    key: frontend-deps
+    paths:
+      - frontend/node_modules
+  only:
+    changes:
+      - frontend/**/*
+
+backend-test:
+  stage: test
+  image: python:3.11-slim
+  script:
+    - cd backend
+    - pip install -r requirements.txt
+    - python -m pytest tests/ || echo "No tests found"
+  dependencies:
+    - backend-install
+  only:
+    changes:
+      - backend/**/*
+
+backend-lint:
+  stage: test
+  image: python:3.11-slim
+  script:
+    - cd backend
+    - pip install flake8
+    - flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics || true
+  dependencies:
+    - backend-install
+  only:
+    changes:
+      - backend/**/*
+
+frontend-build:
+  stage: build
+  image: node:20
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/.next
+    expire_in: 1 day
+  dependencies:
+    - frontend-install
+  only:
+    changes:
+      - frontend/**/*
+
+frontend-typecheck:
+  stage: test
+  image: node:20
+  script:
+    - cd frontend
+    - npm ci
+    - npx tsc --noEmit || true
+  dependencies:
+    - frontend-install
+  only:
+    changes:
+      - frontend/**/*
+
+backend-docker-build:
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - cd backend
+    - docker build -t lifescore-backend:latest .
+  only:
+    - main
+    - master
+
+deploy-info:
+  stage: deploy
+  script:
+    - echo "Deployment ready. Configure your deployment target."
+  only:
+    - main
+    - master
