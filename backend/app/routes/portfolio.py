@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.core.security import get_current_user, AuthUser, log_activity
-from app.core.database import get_db, Database
-from app.services.portfolio_service import PortfolioService
-from app.schemas.portfolio import GitHubAnalyzeRequest, PortfolioAnalysisResponse
-from app.core.logging import get_logger
+from ..core.security import get_current_user, AuthUser, log_activity
+from ..core.database import get_db, Database
+from ..services.portfolio_service import PortfolioService
+from ..schemas.portfolio import GitHubAnalyzeRequest, PortfolioAnalysisResponse
+from ..core.logging import get_logger
 
 router = APIRouter(prefix="/portfolio", tags=["Portfolio"])
 logger = get_logger(__name__)

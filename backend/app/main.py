@@ -4,11 +4,11 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import time
 
-from app.config.settings import settings
-from app.core.database import db
-from app.core.firebase import firebase_auth
-from app.core.logging import get_logger
-from app.routes import auth, cognitive, portfolio, lifescore, certificate, endorsement, admin
+from .config.settings import settings
+from .core.database import db
+from .core.firebase import firebase_auth
+from .core.logging import get_logger
+from .routes import auth, cognitive, portfolio, lifescore, certificate, endorsement, admin
 
 logger = get_logger(__name__)
 

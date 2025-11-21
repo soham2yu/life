@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.core.security import get_current_user, AuthUser, log_activity
-from app.core.database import get_db, Database
-from app.schemas.auth import UserResponse
-from app.core.logging import get_logger
+from ..core.security import get_current_user, AuthUser, log_activity
+from ..core.database import get_db, Database
+from ..schemas.auth import UserResponse
+from ..core.logging import get_logger
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 logger = get_logger(__name__)

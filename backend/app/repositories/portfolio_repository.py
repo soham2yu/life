@@ -1,6 +1,6 @@
 from typing import Dict, Any, Optional, List
-from app.core.database import Database
-from app.core.logging import get_logger
+from ..core.database import Database
+from ..core.logging import get_logger
 import json
 
 logger = get_logger(__name__)

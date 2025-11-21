@@ -1,9 +1,9 @@
 from typing import Optional
-from app.repositories.certificate_repository import CertificateRepository
-from app.repositories.lifescore_repository import LifeScoreRepository
-from app.core.database import Database
-from app.core.logging import get_logger
-from app.config.settings import settings
+from ..repositories.certificate_repository import CertificateRepository
+from ..repositories.lifescore_repository import LifeScoreRepository
+from ..core.database import Database
+from ..core.logging import get_logger
+from ..config.settings import settings
 
 logger = get_logger(__name__)
 

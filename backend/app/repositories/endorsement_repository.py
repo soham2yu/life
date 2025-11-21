@@ -1,5 +1,5 @@
-from app.core.database import Database
-from app.core.logging import get_logger
+from ..core.database import Database
+from ..core.logging import get_logger
 
 logger = get_logger(__name__)
 

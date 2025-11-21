@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from app.core.security import get_current_user, AuthUser, log_activity
-from app.core.database import get_db, Database
-from app.services.lifescore_service import LifeScoreService
-from app.schemas.lifescore import LifeScoreResponse, LifeScoreHistoryResponse
-from app.core.logging import get_logger
+from ..core.database import get_db, Database
+from ..services.lifescore_service import LifeScoreService
+from ..schemas.lifescore import LifeScoreResponse, LifeScoreHistoryResponse
+from ..core.logging import get_logger
 
 router = APIRouter(prefix="/lifescore", tags=["LifeScore"])
 logger = get_logger(__name__)

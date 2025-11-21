@@ -2,8 +2,8 @@ import json
 import firebase_admin
 from firebase_admin import credentials, auth
 from typing import Optional, Dict
-from app.config.settings import settings
-from app.core.logging import get_logger
+from ..config.settings import settings
+from ..core.logging import get_logger
 
 logger = get_logger(__name__)
 

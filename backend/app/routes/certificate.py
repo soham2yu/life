@@ -1,28 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Path
-from app.core.security import get_current_user, AuthUser, log_activity
-from app.core.database import get_db, Database
-from app.services.certificate_service import CertificateService
-from app.schemas.certificate import CertificateResponse, CertificateVerifyResponse
-from app.core.logging import get_logger
+from fastapi import APIRouter, Depends, HTTPException, Request
+from ..core.security import get_current_user, AuthUser, log_activity
+from ..core.database import get_db, Database
+from ..services.certificate_service import CertificateService
+from ..schemas.certificate import CertificateCreate, CertificateResponse, CertificateList
+from ..core.logging import get_logger
 
 router = APIRouter(prefix="/certificate", tags=["Certificates"])
 logger = get_logger(__name__)
 
 
-@router.post("/create", response_model=CertificateResponse)
+@router.post("/", response_model=CertificateResponse)
 async def create_certificate(
+    cert_data: CertificateCreate,
     current_user: AuthUser = Depends(get_current_user),
     db: Database = Depends(get_db),
     request: Request = None
 ):
-    """Create a certificate based on current LifeScore"""
+    """Create a new certificate"""
     service = CertificateService(db)
     
     try:
-        certificate = await service.create_certificate(current_user.user_id)
-        
-        cert_response = dict(certificate)
-        cert_response['verification_url'] = service.get_verification_url(str(certificate['id']))
+        certificate = await service.create_certificate(current_user.user_id, cert_data.dict())
         
         await log_activity(
             db,
@@ -30,60 +28,98 @@ async def create_certificate(
             "certificate.create",
             "certificate",
             str(certificate['id']),
-            {"score": float(certificate['score'])},
+            {"title": certificate['title']},
             request
         )
         
-        return cert_response
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return certificate
+    except Exception as e:
+        logger.error(f"Certificate creation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/", response_model=CertificateList)
+async def get_certificates(
+    limit: int = 10,
+    current_user: AuthUser = Depends(get_current_user),
+    db: Database = Depends(get_db)
+):
+    """Get user's certificates"""
+    service = CertificateService(db)
+    certificates = await service.get_user_certificates(current_user.user_id, limit)
+    return {"certificates": certificates}
 
 
 @router.get("/{certificate_id}", response_model=CertificateResponse)
 async def get_certificate(
-    certificate_id: str = Path(..., description="Certificate ID"),
+    certificate_id: int,
+    current_user: AuthUser = Depends(get_current_user),
     db: Database = Depends(get_db)
 ):
-    """Get certificate by ID (public endpoint)"""
+    """Get specific certificate"""
     service = CertificateService(db)
-    certificate = await service.get_certificate(certificate_id)
+    certificate = await service.get_certificate(certificate_id, current_user.user_id)
     
     if not certificate:
         raise HTTPException(status_code=404, detail="Certificate not found")
     
-    cert_response = dict(certificate)
-    cert_response['verification_url'] = service.get_verification_url(certificate_id)
-    
-    return cert_response
+    return certificate
 
 
-@router.get("/verify/{certificate_hash}", response_model=CertificateVerifyResponse)
-async def verify_certificate(
-    certificate_hash: str = Path(..., description="Certificate hash"),
-    db: Database = Depends(get_db)
-):
-    """Verify certificate by hash (public endpoint)"""
-    service = CertificateService(db)
-    result = await service.verify_certificate(certificate_hash)
-    
-    if result.get('certificate'):
-        result['certificate']['verification_url'] = service.get_verification_url(
-            str(result['certificate']['id'])
-        )
-    
-    return result
-
-
-@router.get("/user/all")
-async def get_user_certificates(
+@router.put("/{certificate_id}")
+async def update_certificate(
+    certificate_id: int,
+    cert_data: CertificateCreate,
     current_user: AuthUser = Depends(get_current_user),
-    db: Database = Depends(get_db)
+    db: Database = Depends(get_db),
+    request: Request = None
 ):
-    """Get all certificates for current user"""
+    """Update certificate"""
     service = CertificateService(db)
-    certificates = await service.get_user_certificates(current_user.user_id)
     
-    for cert in certificates:
-        cert['verification_url'] = service.get_verification_url(str(cert['id']))
+    try:
+        certificate = await service.update_certificate(certificate_id, current_user.user_id, cert_data.dict())
+        
+        await log_activity(
+            db,
+            current_user.user_id,
+            "certificate.update",
+            "certificate",
+            str(certificate_id),
+            {"title": certificate['title']},
+            request
+        )
+        
+        return certificate
+    except Exception as e:
+        logger.error(f"Certificate update failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/{certificate_id}")
+async def delete_certificate(
+    certificate_id: int,
+    current_user: AuthUser = Depends(get_current_user),
+    db: Database = Depends(get_db),
+    request: Request = None
+):
+    """Delete certificate"""
+    service = CertificateService(db)
     
-    return certificates
+    try:
+        await service.delete_certificate(certificate_id, current_user.user_id)
+        
+        await log_activity(
+            db,
+            current_user.user_id,
+            "certificate.delete",
+            "certificate",
+            str(certificate_id),
+            {},
+            request
+        )
+        
+        return {"message": "Certificate deleted successfully"}
+    except Exception as e:
+        logger.error(f"Certificate deletion failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

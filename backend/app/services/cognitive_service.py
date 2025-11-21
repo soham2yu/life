@@ -1,7 +1,7 @@
 from typing import Dict, Any
-from app.repositories.cognitive_repository import CognitiveRepository
-from app.core.database import Database
-from app.core.logging import get_logger
+from ..repositories.cognitive_repository import CognitiveRepository
+from ..core.database import Database
+from ..core.logging import get_logger
 
 logger = get_logger(__name__)
 

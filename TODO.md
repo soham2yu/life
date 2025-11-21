@@ -1,0 +1,6 @@
+- [x] Update frontend/app/page.tsx with black background and yellow/golden accents
+- [x] Update frontend/app/about/page.tsx with black background and yellow/golden accents
+- [x] Update frontend/components/Nav.tsx with black background and yellow/golden accents
+- [x] Update frontend/components/Footer.tsx with black background and yellow/golden accents
+- [x] Update frontend/app/layout.tsx with black background and yellow/golden accents
+- [ ] Test the changes by running the development server

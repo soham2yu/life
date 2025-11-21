@@ -1,9 +1,9 @@
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
-from app.core.firebase import firebase_auth
-from app.core.database import get_db, Database
-from app.core.logging import get_logger
+from ..core.firebase import firebase_auth
+from ..core.database import get_db, Database
+from ..core.logging import get_logger
 
 logger = get_logger(__name__)
 
