@@ -7,12 +7,14 @@ import { useRouter, usePathname } from 'next/navigation';
 
 export default function Nav() {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -68,26 +70,19 @@ export default function Nav() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-300">
-                  Welcome, {user.displayName || user.email}
-                </span>
-                <button
-                  onClick={handleSignOut}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition"
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => router.push('/login')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
-              >
-                Sign In
-              </button>
-            )}
+            <span className={`text-sm text-gray-300 ${user ? '' : 'hidden'}`}>
+              Welcome, {user?.displayName || user?.email}
+            </span>
+            <button
+              onClick={user ? handleSignOut : () => router.push('/login')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                user
+                  ? 'bg-red-600 text-white hover:bg-red-700'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+            >
+              {user ? 'Sign Out' : 'Sign In'}
+            </button>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -24,6 +24,10 @@ class EndorsementResponse(BaseModel):
     weight: float
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True
+
+
+class EndorsementList(BaseModel):
+    endorsements: List[EndorsementResponse]

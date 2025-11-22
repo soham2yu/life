@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from ..core.security import get_current_user, AuthUser, log_activity
 from ..core.database import get_db, Database
 from ..services.certificate_service import CertificateService
-from ..schemas.certificate import CertificateCreate, CertificateResponse, CertificateList
+from ..schemas.certificate import CertificateCreateRequest, CertificateResponse, CertificateVerifyResponse
 from ..core.logging import get_logger
 
 router = APIRouter(prefix="/certificate", tags=["Certificates"])
@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 
 @router.post("/", response_model=CertificateResponse)
 async def create_certificate(
-    cert_data: CertificateCreate,
+    cert_data: CertificateCreateRequest,
     current_user: AuthUser = Depends(get_current_user),
     db: Database = Depends(get_db),
     request: Request = None
@@ -38,7 +38,6 @@ async def create_certificate(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/", response_model=CertificateList)
 async def get_certificates(
     limit: int = 10,
     current_user: AuthUser = Depends(get_current_user),
@@ -69,7 +68,7 @@ async def get_certificate(
 @router.put("/{certificate_id}")
 async def update_certificate(
     certificate_id: int,
-    cert_data: CertificateCreate,
+    cert_data: CertificateCreateRequest,
     current_user: AuthUser = Depends(get_current_user),
     db: Database = Depends(get_db),
     request: Request = None

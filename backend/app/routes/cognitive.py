@@ -1,66 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from ..core.security import get_current_user, AuthUser, log_activity
-from ..core.database import get_db, Database
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from ..core.database import get_db
+from ..core.security import get_current_user
+from ..schemas.cognitive import CognitiveTestCreate, CognitiveTestSubmit, CognitiveTestResponse
 from ..services.cognitive_service import CognitiveService
-from ..schemas.cognitive import CognitiveTestCreate, CognitiveTestResponse, CognitiveTestList
-from ..core.logging import get_logger
+from pydantic import BaseModel
+from typing import Dict, Any
 
-router = APIRouter(prefix="/cognitive", tags=["Cognitive Tests"])
-logger = get_logger(__name__)
+class TestSubmission(BaseModel):
+    test_id: str
+    answers: Dict[str, Any]
+    time_taken_seconds: int
 
+router = APIRouter()
 
-@router.post("/test", response_model=CognitiveTestResponse)
-async def create_cognitive_test(
-    test_data: CognitiveTestSubmit,
-    current_user: AuthUser = Depends(get_current_user),
-    db: Database = Depends(get_db),
-    request: Request = None
+@router.post("/start", response_model=dict)
+async def start_test(
+    test_data: dict,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    """Create a new cognitive test"""
     service = CognitiveService(db)
+    return service.start_test(current_user["uid"], test_data)
 
-    try:
-        test = await service.create_test(current_user.user_id, test_data.dict())
-
-        await log_activity(
-            db,
-            current_user.user_id,
-            "cognitive.create",
-            "cognitive_test",
-            str(test['id']),
-            {"score": float(test['score'])},
-            request
-        )
-
-        return test
-    except Exception as e:
-        logger.error(f"Cognitive test creation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/tests", response_model=CognitiveTestList)
-async def get_cognitive_tests(
-    limit: int = 10,
-    current_user: AuthUser = Depends(get_current_user),
-    db: Database = Depends(get_db)
+@router.post("/submit", response_model=dict)
+async def submit_test(
+    test_data: TestSubmission,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    """Get user's cognitive test history"""
     service = CognitiveService(db)
-    tests = await service.get_user_tests(current_user.user_id, limit)
-    return {"tests": tests}
-
-
-@router.get("/test/{test_id}", response_model=CognitiveTestResponse)
-async def get_cognitive_test(
-    test_id: int,
-    current_user: AuthUser = Depends(get_current_user),
-    db: Database = Depends(get_db)
-):
-    """Get specific cognitive test"""
-    service = CognitiveService(db)
-    test = await service.get_test(test_id, current_user.user_id)
-    
-    if not test:
-        raise HTTPException(status_code=404, detail="Test not found")
-    
-    return test
+    return service.submit_test(current_user["uid"], test_data.dict())
