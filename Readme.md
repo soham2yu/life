@@ -1,4 +1,13 @@
 # LifeScore Platform
+LifeScore – Real Ability Scoring Using GitLab + AI + Blockchain
+
+Video: <YouTube link>
+
+
+🔧 GitLab API Usage
+
+List exact endpoints you used.
+
 
 ## Overview
 Production-grade full-stack application for cognitive testing and portfolio analysis with composite LifeScore calculation.
